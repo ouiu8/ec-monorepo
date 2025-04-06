@@ -1,0 +1,80 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+repositories {
+	mavenCentral()
+	// Domaのリポジトリを明示的に追加
+	maven {
+		url "https://oss.sonatype.org/content/repositories/snapshots/"
+	}
+	maven {
+		url "https://oss.sonatype.org/content/repositories/releases/"
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.postgresql:postgresql'
+	
+	// Doma dependencies - Updated versions for Spring Boot 3.x compatibility
+	implementation 'org.seasar.doma:doma-core:2.54.0'
+	implementation 'org.seasar.doma:doma-slf4j:2.54.0'
+	implementation 'org.seasar.doma.boot:doma-spring-boot-starter:1.7.0'
+	annotationProcessor 'org.seasar.doma:doma-processor:2.54.0'
+	
+	// Spring Security
+	implementation 'org.springframework.security:spring-security-config'
+	implementation 'org.springframework.security:spring-security-web'
+	
+	// Test dependencies
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'org.mockito:mockito-core:5.8.0'
+	testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+}
+
+test {
+	useJUnitPlatform()
+}
+
+// Doma specific configurations
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+	options.compilerArgs << '-Adoma.resources.dir=' + processResources.destinationDir
+}
+
+processResources {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+}
+
+compileJava {
+	dependsOn processResources
+}
+
+sourceSets {
+	main {
+		resources {
+			srcDirs = ['src/main/resources']
+		}
+	}
+}

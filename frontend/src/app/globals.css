@@ -1,0 +1,50 @@
+/* 
+[概要]
+このファイル (globals.css) は Next.js のグローバルスタイルを定義するためのファイル。
+Tailwind CSS のディレクティブ (@tailwind base; など) とカスタム変数を組み合わせて使う。
+*/
+
+/* 
+[Tailwind CSS ディレクティブ]
+`@tailwind base;`    → リセットや基本スタイルを適用
+`@tailwind components;` → Tailwind のコンポーネントレベルのスタイルを適用
+`@tailwind utilities;`  → 余白や色などのユーティリティクラスを適用
+*/
+@tailwind base;       /* Tailwind の基本スタイル (リセット含む) を適用 */
+@tailwind components; /* Tailwind のコンポーネントレベルのスタイルを適用 */
+@tailwind utilities;  /* Tailwind のユーティリティクラスを適用 */
+
+/* 
+[:root - ライトテーマ用の変数を定義]
+--background → 背景色の変数 (白)
+--foreground → 文字色の変数 (濃いグレー)
+*/
+:root {
+  --background: #ffffff; /* 背景色(白) 【light mode】 */
+  --foreground: #1a1a1a; /* 文字色(黒に近いグレー) 【light mode】 */
+}
+
+/* 
+[ダークモード対応 (prefers-color-scheme: dark)]
+OS やブラウザの設定がダークモードのとき、以下の変数を上書きする。
+*/
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a; /* ダークモード時の背景色(黒) */
+    --foreground: #ededed; /* ダークモード時の文字色(明るい灰色) */
+  }
+}
+
+/* 
+[body 要素のスタイル]
+Tailwind CSSのクラスを優先し、カスタム変数はフォールバックとして使用
+*/
+body {
+  font-family: Arial, Helvetica, sans-serif; /* フォントを指定 (サンセリフ系) */
+}
+
+/* 
+[注意]
+- Tailwind CSS のクラスが優先されるよう、カスタム変数による背景色と文字色の設定は削除
+- カスタム変数は必要な場合のフォールバックとして残しておく
+*/
