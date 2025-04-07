@@ -8,4 +8,4 @@ public class EcBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(EcBackendApplication.class, args);
     }
-}
+} 
