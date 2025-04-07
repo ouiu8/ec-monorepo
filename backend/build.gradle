@@ -2,6 +2,7 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.3'
 	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.flywaydb.flyway' version '9.22.3'
 }
 
 group = 'com.example'
@@ -35,6 +36,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 	implementation 'org.postgresql:postgresql'
+	implementation 'org.flywaydb:flyway-core'
 	
 	// Doma dependencies - Updated versions for Spring Boot 3.x compatibility
 	implementation 'org.seasar.doma:doma-core:2.54.0'
@@ -42,9 +44,9 @@ dependencies {
 	implementation 'org.seasar.doma.boot:doma-spring-boot-starter:1.7.0'
 	annotationProcessor 'org.seasar.doma:doma-processor:2.54.0'
 	
-	// Spring Security
-	implementation 'org.springframework.security:spring-security-config'
-	implementation 'org.springframework.security:spring-security-web'
+	// Session management
+	implementation 'org.springframework.session:spring-session-core'
+	implementation 'org.springframework.session:spring-session-jdbc'
 	
 	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -77,4 +79,11 @@ sourceSets {
 			srcDirs = ['src/main/resources']
 		}
 	}
+}
+
+flyway {
+	url = 'jdbc:postgresql://localhost:5432/ec_backend'
+	user = 'tanakasaburou'
+	password = 'postgres'
+	locations = ['classpath:db/migration']
 }
