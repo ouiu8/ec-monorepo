@@ -1,14 +1,16 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.3'
-	id 'io.spring.dependency-management' version '1.1.7'
-	id 'org.flywaydb.flyway' version '9.22.3'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.flywaydb.flyway' version '10.10.0'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 	toolchain {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
@@ -16,13 +18,11 @@ java {
 
 repositories {
 	mavenCentral()
-	// Domaのリポジトリを明示的に追加
-	maven {
-		url "https://oss.sonatype.org/content/repositories/snapshots/"
-	}
-	maven {
-		url "https://oss.sonatype.org/content/repositories/releases/"
-	}
+}
+
+ext {
+	domaVersion = '2.54.0'
+	domaSpringBootVersion = '1.7.0'
 }
 
 configurations {
@@ -32,45 +32,74 @@ configurations {
 }
 
 dependencies {
+	// Spring Boot
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	
+	// Doma
+	implementation "org.seasar.doma:doma-core:${domaVersion}"
+	implementation "org.seasar.doma:doma-slf4j:${domaVersion}"
+	implementation "org.seasar.doma.boot:doma-spring-boot-starter:${domaSpringBootVersion}"
+	annotationProcessor "org.seasar.doma:doma-processor:${domaVersion}"
+	
+	// Database
 	implementation 'org.postgresql:postgresql'
-	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-core:10.10.0'
+	implementation 'org.flywaydb:flyway-database-postgresql:10.10.0'
 	
-	// Doma dependencies - Updated versions for Spring Boot 3.x compatibility
-	implementation 'org.seasar.doma:doma-core:2.54.0'
-	implementation 'org.seasar.doma:doma-slf4j:2.54.0'
-	implementation 'org.seasar.doma.boot:doma-spring-boot-starter:1.7.0'
-	annotationProcessor 'org.seasar.doma:doma-processor:2.54.0'
+	// Jakarta EE
+	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	
-	// Session management
-	implementation 'org.springframework.session:spring-session-core'
-	implementation 'org.springframework.session:spring-session-jdbc'
+	// Jackson
+	implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+	
+	// Lombok
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 	
 	// Test dependencies
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'org.mockito:mockito-core:5.8.0'
-	testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+	testImplementation 'org.mockito:mockito-core:5.3.1'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+	testImplementation 'org.assertj:assertj-core:3.24.2'
+	testImplementation 'com.h2database:h2:2.2.224'
+	
+	// Testcontainers
+	testImplementation 'org.testcontainers:testcontainers:1.19.7'
+	testImplementation 'org.testcontainers:junit-jupiter:1.19.7'
+	testImplementation 'org.testcontainers:postgresql:1.19.7'
+	
+	// Runtime dependencies
+	runtimeOnly 'com.h2database:h2:2.2.224'
 }
 
 test {
 	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+		exceptionFormat "full"
+	}
 }
 
-// Doma specific configurations
+// Doma settings
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
+	options.compilerArgs << '-Adoma.domain.converters=com.example.ecbackend.domain.converter.StringCsvConverter'
+	options.compilerArgs << '-Adoma.dao.subpackage=impl'
+	options.compilerArgs << '-Adoma.dao.suffix=Impl'
 	options.compilerArgs << '-Adoma.resources.dir=' + processResources.destinationDir
 }
 
 processResources {
+	filesMatching('**/*.sql') {
+		expand project.properties
+	}
 	duplicatesStrategy = DuplicatesStrategy.INCLUDE
-}
-
-compileJava {
-	dependsOn processResources
 }
 
 sourceSets {
@@ -81,9 +110,14 @@ sourceSets {
 	}
 }
 
+compileJava {
+	dependsOn processResources
+}
+
 flyway {
 	url = 'jdbc:postgresql://localhost:5432/ec_backend'
 	user = 'tanakasaburou'
 	password = 'postgres'
 	locations = ['classpath:db/migration']
+	baselineOnMigrate = true
 }

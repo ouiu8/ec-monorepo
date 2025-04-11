@@ -1,34 +1,18 @@
 package com.example.ecbackend.entity;
 
-import org.seasar.doma.Entity;
-import org.seasar.doma.GeneratedValue;
-import org.seasar.doma.GenerationType;
-import org.seasar.doma.Id;
-import org.seasar.doma.Table;
-import org.seasar.doma.Column;
-
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "cart_items")
-public class CartItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+/**
+ * 注文明細エンティティ
+ */
+public class OrderItem {
     private Long id;
-
-    @Column(name = "cart_id")
-    private Long cartId;
-
-    @Column(name = "product_id")
+    private Long orderId;
     private Long productId;
-
-    @Column(name = "quantity")
-    private int quantity;
-
-    @Column(name = "created_at")
+    private Integer quantity;
+    private Integer unitPrice;
+    private Integer subtotal;
     private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     public Long getId() {
@@ -39,12 +23,12 @@ public class CartItem {
         this.id = id;
     }
 
-    public Long getCartId() {
-        return cartId;
+    public Long getOrderId() {
+        return orderId;
     }
 
-    public void setCartId(Long cartId) {
-        this.cartId = cartId;
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
     }
 
     public Long getProductId() {
@@ -55,12 +39,28 @@ public class CartItem {
         this.productId = productId;
     }
 
-    public int getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Integer getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(Integer unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public Integer getSubtotal() {
+        return subtotal;
+    }
+
+    public void setSubtotal(Integer subtotal) {
+        this.subtotal = subtotal;
     }
 
     public LocalDateTime getCreatedAt() {

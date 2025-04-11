@@ -1,7 +1,2 @@
-SELECT
-    id,
-    name,
-    description,
-    price
-FROM
-    products
+SELECT /*%expand*/*
+FROM products

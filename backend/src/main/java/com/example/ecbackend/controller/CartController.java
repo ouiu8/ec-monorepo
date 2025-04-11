@@ -1,10 +1,11 @@
 package com.example.ecbackend.controller;
 
-import org.springframework.web.bind.annotation.*;
-import org.springframework.http.ResponseEntity;
-import com.example.ecbackend.service.CartService;
 import com.example.ecbackend.entity.CartItem;
-import jakarta.servlet.http.HttpSession;
+import com.example.ecbackend.service.CartService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -17,34 +18,32 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CartItem>> getCart(HttpSession session) {
-        List<CartItem> items = cartService.getCartItems(session.getId());
-        return ResponseEntity.ok(items);
+    public ResponseEntity<List<CartItem>> getCart(@RequestHeader("X-Session-ID") String sessionId) {
+        return ResponseEntity.ok(cartService.getCartItems(sessionId));
     }
 
-    @PostMapping("/items")
+    @PostMapping
     public ResponseEntity<CartItem> addToCart(
-            HttpSession session,
-            @RequestParam Long productId,
-            @RequestParam(defaultValue = "1") Integer quantity) {
-        CartItem item = cartService.addToCart(session.getId(), productId, quantity);
-        return ResponseEntity.ok(item);
+            @RequestHeader("X-Session-ID") String sessionId,
+            @RequestBody CartItem cartItem) {
+        CartItem savedItem = cartService.addToCart(sessionId, cartItem.getProductId(), cartItem.getQuantity());
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedItem);
     }
 
-    @PutMapping("/items/{productId}")
-    public ResponseEntity<Void> updateCartItemQuantity(
-            HttpSession session,
-            @PathVariable Long productId,
-            @RequestParam Integer quantity) {
-        cartService.updateCartItemQuantity(session.getId(), productId, quantity);
-        return ResponseEntity.ok().build();
+    @PutMapping("/{cartItemId}")
+    public ResponseEntity<Void> updateCartItem(
+            @RequestHeader("X-Session-ID") String sessionId,
+            @PathVariable Long cartItemId,
+            @RequestBody CartItem cartItem) {
+        cartService.updateCartItem(sessionId, cartItemId, cartItem.getQuantity());
+        return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/items/{productId}")
+    @DeleteMapping("/{cartItemId}")
     public ResponseEntity<Void> removeFromCart(
-            HttpSession session,
-            @PathVariable Long productId) {
-        cartService.removeFromCart(session.getId(), productId);
-        return ResponseEntity.ok().build();
+            @RequestHeader("X-Session-ID") String sessionId,
+            @PathVariable Long cartItemId) {
+        cartService.removeFromCart(sessionId, cartItemId);
+        return ResponseEntity.noContent().build();
     }
 } 

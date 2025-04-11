@@ -1,3 +1,3 @@
-SELECT id, session_id, created_at, updated_at
+SELECT /*%expand*/*
 FROM carts
-WHERE session_id = /* sessionId */'test' 
+WHERE session_id = /* sessionId */'' 
