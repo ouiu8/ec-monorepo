@@ -1,0 +1,2 @@
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal, created_at, updated_at)
+VALUES (/* orderItem.orderId */1, /* orderItem.productId */1, /* orderItem.quantity */1, /* orderItem.unitPrice */0, /* orderItem.subtotal */0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)

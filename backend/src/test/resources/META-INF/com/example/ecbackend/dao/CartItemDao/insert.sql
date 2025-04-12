@@ -1,0 +1,2 @@
+INSERT INTO cart_items (cart_id, product_id, quantity, created_at, updated_at)
+VALUES (/* cartItem.cartId */1, /* cartItem.productId */1, /* cartItem.quantity */1, /* cartItem.createdAt */CURRENT_TIMESTAMP, /* cartItem.updatedAt */CURRENT_TIMESTAMP) 

@@ -14,6 +14,9 @@ public interface CartDao {
     @Select
     Optional<Cart> findBySessionId(String sessionId);
 
+    @Select
+    Optional<Cart> findById(Long id);
+
     @Insert
     int insert(Cart cart);
 } 

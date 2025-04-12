@@ -1,0 +1,2 @@
+INSERT INTO orders (user_id, order_date, status, total_amount, shipping_address, payment_method, created_at, updated_at)
+VALUES (/* order.userId */1, /* order.orderDate */CURRENT_TIMESTAMP, /* order.status */'PENDING', /* order.totalAmount */0, /* order.shippingAddress */'', /* order.paymentMethod */'', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)

@@ -1,22 +1,54 @@
 package com.example.ecbackend.entity;
 
+import org.seasar.doma.Entity;
+import org.seasar.doma.GeneratedValue;
+import org.seasar.doma.GenerationType;
+import org.seasar.doma.Id;
+import org.seasar.doma.Table;
+import org.seasar.doma.Column;
+import org.seasar.doma.Transient;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
  * 注文エンティティ
  */
+@Entity
+@Table(name = "orders")
 public class Order {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @Column(name = "user_id")
     private Long userId;
+    
+    @Column(name = "order_date")
     private LocalDateTime orderDate;
+    
+    @Column(name = "status")
     private String status;
+    
+    @Column(name = "total_amount")
     private Integer totalAmount;
+    
+    @Column(name = "shipping_address")
     private String shippingAddress;
+    
+    @Column(name = "payment_method")
     private String paymentMethod;
+    
+    @Column(name = "cancelled_at")
     private LocalDateTime cancelledAt;
+    
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+    
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    
+    @Transient
     private List<OrderItem> items;
 
     public Long getId() {

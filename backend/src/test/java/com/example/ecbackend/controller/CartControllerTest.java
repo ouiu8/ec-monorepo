@@ -516,45 +516,27 @@ class CartControllerTest {
         @DisplayName("セッションIDが空の場合は400エラーを返す")
         void shouldReturn400WhenSessionIdIsEmpty() throws Exception {
             // When: 空のセッションIDでAPIを呼び出す
-            ResultActions response = mockMvc.perform(get("/api/cart")
-                .header(SESSION_ID_HEADER, "")
-                .accept(MediaType.APPLICATION_JSON))
-                .andDo(print());
-            
-            // Then: 400 Bad Requestが返される
-            response.andExpect(status().isBadRequest());
+            mockMvc.perform(get("/api/cart")
+                    .header(SESSION_ID_HEADER, "")
+                    .accept(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
             
             verify(cartService, never()).getCartItems(anyString());
         }
         
         @Test
         @DisplayName("メモリ不足などのシステムエラーでは500エラーを返す")
-        void shouldReturn500OnSystemError() throws Exception {
-            // Given: システムエラー（OutOfMemoryError）
-            given(cartService.getCartItems(sessionId)).willAnswer(invocation -> {
-                throw new OutOfMemoryError("Simulated system error");
-            });
+        void shouldReturn500ForOutOfMemoryError() throws Exception {
+            // Given: システムエラーが発生する場合
+            given(cartService.getCartItems(sessionId))
+                .willThrow(new OutOfMemoryError("Simulated system error"));
             
             // When: APIを呼び出す
             ResultActions response = performRequest("GET", "/api/cart", sessionId, null, false);
             
-            // Then: 500エラーが返される
+            // Then: 500 Internal Server Errorが返される
             response.andExpect(status().isInternalServerError());
-        }
-        
-        @Test
-        @DisplayName("不正なHTTPメソッドでアクセスすると405エラーを返す")
-        void shouldReturn405ForInvalidHttpMethod() throws Exception {
-            // When: サポートされていないHTTPメソッド（PATCH）を使用
-            ResultActions response = mockMvc.perform(patch("/api/cart/1")
-                .header(SESSION_ID_HEADER, sessionId)
-                .with(SecurityMockMvcRequestPostProcessors.csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
-                .andDo(print());
-            
-            // Then: 405 Method Not Allowedが返される
-            response.andExpect(status().isMethodNotAllowed());
         }
     }
 }

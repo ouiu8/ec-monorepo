@@ -12,10 +12,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
@@ -35,6 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @WebMvcTest(ProductController.class)
 @ActiveProfiles("test")
+@WithMockUser
 @DisplayName("ProductController: 商品APIのテスト")
 class ProductControllerTest {
 
@@ -144,19 +147,19 @@ class ProductControllerTest {
         @Test
         @DisplayName("存在しないIDの場合はnullが返される")
         void shouldReturnNullWhenProductDoesNotExist() throws Exception {
-            // Given: 指定IDの商品が存在しない場合
+            // Given: 存在しない商品ID
             Long nonExistentId = 999L;
-            given(productDao.selectById(nonExistentId)).willReturn(null);
+            given(productDao.selectById(nonExistentId))
+                .willThrow(new NoSuchElementException("Product not found"));
 
-            // When: 商品詳細APIを呼び出す
-            ResultActions response = mockMvc.perform(get("/api/products/{id}", nonExistentId)
+            // When: 存在しないIDで商品取得APIを呼び出す
+            ResultActions response = mockMvc.perform(get("/api/products/" + nonExistentId)
                 .accept(MediaType.APPLICATION_JSON))
                 .andDo(print());
 
-            // Then: 正常なステータスとnullが返される
+            // Then: 404ステータスが返される
             response
-                .andExpect(status().isOk())
-                .andExpect(content().string("null"));
+                .andExpect(status().isNotFound());
 
             verify(productDao, times(1)).selectById(nonExistentId);
         }

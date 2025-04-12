@@ -1,12 +1,19 @@
 package com.example.ecbackend.dao;
 
 import com.example.ecbackend.entity.OrderItem;
+import org.seasar.doma.Dao;
+import org.seasar.doma.Insert;
+import org.seasar.doma.Select;
+import org.seasar.doma.Update;
+import org.seasar.doma.boot.ConfigAutowireable;
 
 import java.util.List;
 
 /**
  * 注文明細データアクセスインターフェース
  */
+@Dao
+@ConfigAutowireable
 public interface OrderItemDao {
     
     /**
@@ -15,6 +22,7 @@ public interface OrderItemDao {
      * @param orderItem 注文明細エンティティ
      * @return 登録件数
      */
+    @Insert
     int insert(OrderItem orderItem);
     
     /**
@@ -23,6 +31,7 @@ public interface OrderItemDao {
      * @param orderItem 注文明細エンティティ
      * @return 更新件数
      */
+    @Update
     int update(OrderItem orderItem);
     
     /**
@@ -31,6 +40,7 @@ public interface OrderItemDao {
      * @param orderId 注文ID
      * @return 注文明細エンティティのリスト
      */
+    @Select
     List<OrderItem> findByOrderId(Long orderId);
     
     /**
@@ -39,5 +49,6 @@ public interface OrderItemDao {
      * @param id 注文明細ID
      * @return 注文明細エンティティ
      */
+    @Select
     OrderItem findById(Long id);
 } 
